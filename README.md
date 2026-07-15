@@ -50,13 +50,13 @@ No external libraries.
 1. Clone the repository
 
 ```bash
-git clone https://github.com/yourusername/transient-mandala.git
+git clone https://github.com/iamtransient/projecttara
 ```
 
 2. Open
 
 ```text
-index.html
+sacred-mandala.html
 ```
 
 in any modern browser.
