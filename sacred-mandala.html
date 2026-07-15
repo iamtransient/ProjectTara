@@ -1,0 +1,762 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Transient Mandala — Ultra Detailed</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=JetBrains+Mono:wght@400;500&display=swap');
+
+  * { margin:0; padding:0; box-sizing:border-box; }
+
+  :root{
+    --bg:#0a0e27;
+    --fg:#e8e2d0;
+    --gold:#c9a227;
+    --ink:#2b1d0e;
+    --border:rgba(201,162,39,0.25);
+    --glass:rgba(255,255,255,0.04);
+  }
+
+  html,body{
+    width:100%; min-height:100vh;
+    background:
+      radial-gradient(circle at 30% 20%, rgba(201,162,39,0.06), transparent 45%),
+      radial-gradient(circle at 70% 80%, rgba(120,80,200,0.06), transparent 45%),
+      var(--bg);
+    color:var(--fg);
+    font-family:'JetBrains Mono', monospace;
+  }
+
+  body{
+    display:flex; flex-direction:column; align-items:center;
+    padding:1.25rem 1rem 3rem;
+    gap:1.1rem;
+  }
+
+  .title{
+    font-family:'Cinzel', serif;
+    font-weight:700;
+    font-size:1.7rem;
+    letter-spacing:3px;
+    text-align:center;
+    color:var(--gold);
+    text-shadow:0 0 25px rgba(201,162,39,0.35);
+  }
+  .subtitle{
+    font-size:0.7rem;
+    letter-spacing:1.5px;
+    text-align:center;
+    color:rgba(232,226,208,0.5);
+    text-transform:uppercase;
+  }
+
+  .panel{
+    width:100%; max-width:560px;
+    background:var(--glass);
+    border:1px solid var(--border);
+    border-radius:14px;
+    backdrop-filter:blur(10px);
+    padding:1rem;
+    display:flex; flex-direction:column; gap:0.8rem;
+  }
+
+  .row{ display:flex; gap:0.6rem; flex-wrap:wrap; }
+  .field{ flex:1; min-width:130px; display:flex; flex-direction:column; gap:0.35rem; }
+  .field label{
+    font-size:0.65rem; letter-spacing:1.5px; text-transform:uppercase; color:var(--gold);
+  }
+  select, input[type=range]{
+    width:100%;
+    background:rgba(0,0,0,0.35);
+    border:1px solid var(--border);
+    border-radius:8px;
+    padding:0.6rem 0.7rem;
+    color:var(--fg);
+    font-family:'JetBrains Mono', monospace;
+    font-size:0.82rem;
+  }
+  input[type=range]{ padding:0; accent-color:var(--gold); }
+
+  .btn-row{ display:flex; gap:0.6rem; flex-wrap:wrap; }
+  button{
+    flex:1; min-width:130px; min-height:48px;
+    border-radius:10px; border:1px solid var(--border);
+    background:rgba(201,162,39,0.08);
+    color:var(--gold);
+    font-family:'Cinzel', serif; font-weight:700; letter-spacing:1px;
+    font-size:0.78rem; cursor:pointer; transition:.25s;
+  }
+  button:hover{ background:rgba(201,162,39,0.18); box-shadow:0 0 20px rgba(201,162,39,0.3); transform:translateY(-1px); }
+  button:active{ transform:scale(0.97); }
+  button.secondary{ color:#9fd8ff; border-color:rgba(159,216,255,0.3); background:rgba(159,216,255,0.07); }
+  button.secondary:hover{ background:rgba(159,216,255,0.15); box-shadow:0 0 20px rgba(159,216,255,0.3); }
+
+  .canvas-wrap{
+    width:100%; max-width:560px; aspect-ratio:1/1;
+    border-radius:16px; overflow:hidden;
+    border:1px solid var(--border);
+    box-shadow:0 0 50px rgba(0,0,0,0.55);
+  }
+  canvas{ width:100%; height:100%; display:block; }
+
+  .meta{
+    width:100%; max-width:560px;
+    display:flex; justify-content:space-between; flex-wrap:wrap; gap:0.5rem;
+    font-size:0.68rem; color:rgba(232,226,208,0.5);
+  }
+  .meta .id{ color:var(--gold); }
+
+  footer{
+    font-size:0.65rem;
+    letter-spacing:0.5px;
+    color:rgba(232,226,208,0.35);
+    text-align:center;
+    margin-top:0.4rem;
+  }
+</style>
+</head>
+<body>
+
+<div class="title">TRANSIENT MANDALA</div>
+<div class="subtitle">ultra-detailed · radial symmetry · sacred geometry</div>
+
+<div class="panel">
+  <div class="row">
+    <div class="field">
+      <label for="symRange">Symmetry: <span id="symVal">24</span></label>
+      <input type="range" id="symRange" min="8" max="64" step="4" value="24">
+    </div>
+    <div class="field">
+      <label for="themeSelect">Palette</label>
+      <select id="themeSelect">
+        <option value="parchment" selected>Ink & Gold Parchment</option>
+        <option value="moonlight">Moonlight Silver</option>
+        <option value="rosegold">Rose Gold Void</option>
+        <option value="emerald">Emerald & Ivory</option>
+        <option value="sunset">Sunset Copper</option>
+        <option value="ocean">Ocean Teal</option>
+        <option value="amethyst">Amethyst Dusk</option>
+        <option value="ruby">Blood Ruby</option>
+        <option value="obsidian">Obsidian & Silver</option>
+        <option value="desert">Desert Sand</option>
+        <option value="peacock">Peacock Jewel</option>
+        <option value="blossom">Cherry Blossom</option>
+        <option value="arctic">Arctic Frost</option>
+        <option value="royal">Royal Sapphire</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="field">
+    <label for="designSelect">Design</label>
+    <select id="designSelect">
+      <option value="peonyBloom" selected>Peony Bloom</option>
+      <option value="hibiscusBloom">Hibiscus Bloom</option>
+      <option value="sunflowerBloom">Sunflower Bloom</option>
+      <option value="daisyBloom">Daisy Bloom</option>
+      <option value="chrysanthemumBloom">Chrysanthemum Bloom</option>
+    </select>
+  </div>
+
+  <div class="btn-row">
+    <button id="generateBtn">✦ Weave New Mandala</button>
+    <button id="downloadBtn" class="secondary">⬇ Save High-Res PNG</button>
+  </div>
+  <div class="btn-row">
+    <button id="downloadA4Btn" class="secondary">⬇ Save A4 PNG (300dpi)</button>
+  </div>
+</div>
+
+<div class="canvas-wrap">
+  <canvas id="mandalaCanvas" width="1400" height="1400"></canvas>
+</div>
+
+<div class="meta">
+  <span>Design: <span id="metaDesign">Peony Bloom</span></span>
+  <span>Symmetry: <span id="metaSym">24</span>-fold</span>
+  <span class="id">ID: <span id="metaId">—</span></span>
+</div>
+
+<footer>&copy; <span id="year"></span> Transient. All rights reserved.</footer>
+
+<script>
+(() => {
+  const canvas = document.getElementById('mandalaCanvas');
+  const ctx = canvas.getContext('2d');
+  const symRange = document.getElementById('symRange');
+  const symVal = document.getElementById('symVal');
+  const themeSelect = document.getElementById('themeSelect');
+  const designSelect = document.getElementById('designSelect');
+  const generateBtn = document.getElementById('generateBtn');
+  const downloadBtn = document.getElementById('downloadBtn');
+  const downloadA4Btn = document.getElementById('downloadA4Btn');
+  const metaDesign = document.getElementById('metaDesign');
+  const metaSym = document.getElementById('metaSym');
+  const metaId = document.getElementById('metaId');
+
+  const SIZE = canvas.width;
+
+  const THEMES = {
+    parchment: { bg:'#f3ead2', bg2:'#e9dcb8', ink:'#3a2a12', gold:'#a97a1f', accent:'#7c3b2e' },
+    moonlight: { bg:'#0e1524', bg2:'#141c33', ink:'#cfe3ff', gold:'#9fd8ff', accent:'#c9c9ff' },
+    rosegold:  { bg:'#160b12', bg2:'#20101a', ink:'#f3d9c9', gold:'#e8a87c', accent:'#ff9ecb' },
+    emerald:   { bg:'#0c1a14', bg2:'#122822', ink:'#eef7ee', gold:'#7fd9a6', accent:'#c9a227' },
+    sunset:    { bg:'#1e0f08', bg2:'#2c150a', ink:'#ffe3c2', gold:'#ff8a3d', accent:'#d94f2b' },
+    ocean:     { bg:'#031b22', bg2:'#062733', ink:'#dff7f5', gold:'#3fd6c4', accent:'#1c7a99' },
+    amethyst:  { bg:'#1a0e2e', bg2:'#241340', ink:'#ecdcff', gold:'#b47cff', accent:'#7c5cff' },
+    ruby:      { bg:'#1c0508', bg2:'#2b0a0e', ink:'#ffe1e1', gold:'#e63950', accent:'#8c1c2b' },
+    obsidian:  { bg:'#0a0a0c', bg2:'#161619', ink:'#f2f2f2', gold:'#c4c4c4', accent:'#7d7d7d' },
+    desert:    { bg:'#2b1d10', bg2:'#3a2717', ink:'#fff2d9', gold:'#d99b45', accent:'#a85c2e' },
+    peacock:   { bg:'#04201f', bg2:'#053330', ink:'#e6fff9', gold:'#2fd9c4', accent:'#1f6fb2' },
+    blossom:   { bg:'#210e15', bg2:'#301220', ink:'#ffe6ef', gold:'#ff8fb3', accent:'#d94f8a' },
+    arctic:    { bg:'#0d1b24', bg2:'#132738', ink:'#eaf6ff', gold:'#8fd1ff', accent:'#c7e8ff' },
+    royal:     { bg:'#0a1030', bg2:'#101a4a', ink:'#e8ecff', gold:'#ffd166', accent:'#5c7cff' },
+  };
+
+  // ---- seeded PRNG ----
+  function hashSeed(str) {
+    let h = 1779033703 ^ str.length;
+    for (let i = 0; i < str.length; i++) {
+      h = Math.imul(h ^ str.charCodeAt(i), 3432918353);
+      h = (h << 13) | (h >>> 19);
+    }
+    return () => {
+      h = Math.imul(h ^ (h >>> 16), 2246822507);
+      h = Math.imul(h ^ (h >>> 13), 3266489909);
+      h ^= h >>> 16;
+      return h >>> 0;
+    };
+  }
+  function mulberry32(a) {
+    return function() {
+      a |= 0; a = (a + 0x6D2B79F5) | 0;
+      let t = Math.imul(a ^ (a >>> 15), 1 | a);
+      t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    };
+  }
+  function makeRng(seedStr) { return mulberry32(hashSeed(seedStr)()); }
+  function uniqueId() {
+    return (Date.now().toString(36) + Math.random().toString(36).slice(2,7)).toUpperCase();
+  }
+  function hexToRgba(hex, alpha) {
+    const h = hex.replace('#','');
+    const n = parseInt(h.length === 3 ? h.split('').map(c=>c+c).join('') : h, 16);
+    return `rgba(${(n>>16)&255},${(n>>8)&255},${n&255},${alpha})`;
+  }
+
+  // =========================================================
+  // Ornamental motif primitives — all drawn in LOCAL space
+  // (petal/curl pointing along +Y from origin) then placed via
+  // rotation transforms, so perfect radial symmetry is guaranteed.
+  // =========================================================
+
+  function dotRing(g, cx, cy, r, count, dotR, color, alpha) {
+    g.fillStyle = hexToRgba(color, alpha);
+    for (let i = 0; i < count; i++) {
+      const a = (i / count) * Math.PI * 2;
+      g.beginPath();
+      g.arc(cx + Math.sin(a) * r, cy - Math.cos(a) * r, dotR, 0, Math.PI * 2);
+      g.fill();
+    }
+  }
+
+  function circleOutline(g, cx, cy, r, color, alpha, lw) {
+    g.strokeStyle = hexToRgba(color, alpha);
+    g.lineWidth = lw;
+    g.beginPath();
+    g.arc(cx, cy, r, 0, Math.PI * 2);
+    g.stroke();
+  }
+
+  function rayTicks(g, cx, cy, r0, r1, count, color, alpha, lw) {
+    g.strokeStyle = hexToRgba(color, alpha);
+    g.lineWidth = lw;
+    for (let i = 0; i < count; i++) {
+      const a = (i / count) * Math.PI * 2;
+      const sx = Math.sin(a), cy2 = -Math.cos(a);
+      g.beginPath();
+      g.moveTo(cx + sx * r0, cy + cy2 * r0);
+      g.lineTo(cx + sx * r1, cy + cy2 * r1);
+      g.stroke();
+    }
+  }
+
+  // Lotus petal: pointed teardrop from rInner to rOuter, drawn with two
+  // symmetric bezier curves so it reads as a clean vector petal outline.
+  function petalRing(g, cx, cy, rInner, rOuter, count, widthFrac, color, alpha, lw, fill, offsetAngle) {
+    g.strokeStyle = hexToRgba(color, alpha);
+    g.fillStyle = hexToRgba(color, fill ? alpha * 0.18 : 0);
+    g.lineWidth = lw;
+    const halfW = (rOuter - rInner) * widthFrac;
+    for (let i = 0; i < count; i++) {
+      const a = (i / count) * Math.PI * 2 + (offsetAngle || 0);
+      g.save();
+      g.translate(cx, cy);
+      g.rotate(a);
+      g.beginPath();
+      g.moveTo(0, -rInner);
+      g.bezierCurveTo(halfW, -(rInner + (rOuter - rInner) * 0.35), halfW * 0.7, -(rOuter - (rOuter - rInner) * 0.12), 0, -rOuter);
+      g.bezierCurveTo(-halfW * 0.7, -(rOuter - (rOuter - rInner) * 0.12), -halfW, -(rInner + (rOuter - rInner) * 0.35), 0, -rInner);
+      g.closePath();
+      if (fill) g.fill();
+      g.stroke();
+      // inner vein line
+      g.beginPath();
+      g.moveTo(0, -rInner - (rOuter - rInner) * 0.08);
+      g.lineTo(0, -rOuter + (rOuter - rInner) * 0.1);
+      g.lineWidth = lw * 0.6;
+      g.stroke();
+      g.lineWidth = lw;
+      g.restore();
+    }
+  }
+
+  // Filigree scrollwork: a spiral curl motif — reads as ornate ironwork/henna line art.
+  function filigreeRing(g, cx, cy, r, count, scale, color, alpha, lw, mirror) {
+    g.strokeStyle = hexToRgba(color, alpha);
+    g.lineWidth = lw;
+    for (let i = 0; i < count; i++) {
+      const a = (i / count) * Math.PI * 2;
+      g.save();
+      g.translate(cx, cy);
+      g.rotate(a);
+      g.translate(0, -r);
+      if (mirror && i % 2 === 1) g.scale(-1, 1);
+      g.beginPath();
+      let ang = 0, rad = scale * 0.15;
+      g.moveTo(0, 0);
+      for (let s = 0; s < 26; s++) {
+        ang += 0.55;
+        rad += scale * 0.045;
+        g.lineTo(Math.cos(ang) * rad - rad, Math.sin(ang) * rad * 0.9);
+      }
+      g.stroke();
+      // small terminal dot
+      const ang2 = ang, rad2 = rad;
+      g.beginPath();
+      g.arc(Math.cos(ang2) * rad2 - rad2, Math.sin(ang2) * rad2 * 0.9, scale * 0.06, 0, Math.PI * 2);
+      g.fillStyle = hexToRgba(color, alpha);
+      g.fill();
+      g.restore();
+    }
+  }
+
+  // Paisley motif: teardrop body with an inner curl — classic ornamental shape.
+  function paisleyRing(g, cx, cy, r, count, size, color, alpha, lw) {
+    g.strokeStyle = hexToRgba(color, alpha);
+    g.lineWidth = lw;
+    for (let i = 0; i < count; i++) {
+      const a = (i / count) * Math.PI * 2;
+      g.save();
+      g.translate(cx, cy);
+      g.rotate(a);
+      g.translate(0, -r);
+      g.beginPath();
+      g.moveTo(0, -size * 0.55);
+      g.bezierCurveTo(size * 0.55, -size * 0.4, size * 0.5, size * 0.35, 0, size * 0.55);
+      g.bezierCurveTo(-size * 0.32, size * 0.3, -size * 0.28, -size * 0.05, 0, -size * 0.05);
+      g.stroke();
+      // inner curl
+      g.beginPath();
+      g.arc(size * 0.05, size * 0.18, size * 0.16, 0, Math.PI * 1.4);
+      g.lineWidth = lw * 0.7;
+      g.stroke();
+      g.lineWidth = lw;
+      g.restore();
+    }
+  }
+
+  // Sacred geometry: overlapping "flower of life" circles at a given radius.
+  function flowerOfLifeRing(g, cx, cy, r, count, circleR, color, alpha, lw) {
+    g.strokeStyle = hexToRgba(color, alpha);
+    g.lineWidth = lw;
+    for (let i = 0; i < count; i++) {
+      const a = (i / count) * Math.PI * 2;
+      g.beginPath();
+      g.arc(cx + Math.sin(a) * r, cy - Math.cos(a) * r, circleR, 0, Math.PI * 2);
+      g.stroke();
+    }
+  }
+
+  // Star polygon (sacred geometry guide, e.g. 8-point star / hexagram-like).
+  function starPolygon(g, cx, cy, r, points, color, alpha, lw, rot) {
+    g.strokeStyle = hexToRgba(color, alpha);
+    g.lineWidth = lw;
+    g.beginPath();
+    const skip = Math.floor(points / 2) - (points % 2 === 0 ? 1 : 0) || 2;
+    for (let i = 0; i <= points; i++) {
+      const idx = (i * skip) % points;
+      const a = (idx / points) * Math.PI * 2 + (rot || 0);
+      const x = cx + Math.sin(a) * r, y = cy - Math.cos(a) * r;
+      if (i === 0) g.moveTo(x, y); else g.lineTo(x, y);
+    }
+    g.stroke();
+  }
+
+  // Scalloped border ring — small arcs forming a decorative rim.
+  function scallopBorder(g, cx, cy, r, count, size, color, alpha, lw) {
+    g.strokeStyle = hexToRgba(color, alpha);
+    g.lineWidth = lw;
+    for (let i = 0; i < count; i++) {
+      const a0 = (i / count) * Math.PI * 2;
+      const a1 = ((i + 1) / count) * Math.PI * 2;
+      const aMid = (a0 + a1) / 2;
+      g.beginPath();
+      g.arc(cx + Math.sin(aMid) * (r + size * 0.5), cy - Math.cos(aMid) * (r + size * 0.5), size * 0.55, 0, Math.PI * 2);
+      g.stroke();
+    }
+  }
+
+  // Flowing garland: a continuous scalloped/wave line threading through a
+  // ring of points — knits adjacent motifs together and fills the empty
+  // space between them, especially valuable at low symmetry counts.
+  function garlandRing(g, cx, cy, r, count, bulge, color, alpha, lw) {
+    g.strokeStyle = hexToRgba(color, alpha);
+    g.lineWidth = lw;
+    g.beginPath();
+    const pts = [];
+    for (let i = 0; i <= count; i++) {
+      const a = (i / count) * Math.PI * 2;
+      pts.push([cx + Math.sin(a) * r, cy - Math.cos(a) * r]);
+    }
+    g.moveTo(pts[0][0], pts[0][1]);
+    for (let i = 0; i < count; i++) {
+      const aMid = ((i + 0.5) / count) * Math.PI * 2;
+      const rMid = r + bulge;
+      const mx = cx + Math.sin(aMid) * rMid;
+      const my = cy - Math.cos(aMid) * rMid;
+      g.quadraticCurveTo(mx, my, pts[i + 1][0], pts[i + 1][1]);
+    }
+    g.stroke();
+  }
+
+  // Rounded-tip oval petal — reads as a soft rose/daisy petal rather than
+  // a pointed lotus tip.
+  function ovalPetalRing(g, cx, cy, rInner, rOuter, count, widthFrac, color, alpha, lw, fill, offsetAngle) {
+    g.strokeStyle = hexToRgba(color, alpha);
+    g.fillStyle = hexToRgba(color, fill ? alpha * 0.22 : 0);
+    g.lineWidth = lw;
+    const halfW = (rOuter - rInner) * widthFrac;
+    for (let i = 0; i < count; i++) {
+      const a = (i / count) * Math.PI * 2 + (offsetAngle || 0);
+      g.save();
+      g.translate(cx, cy);
+      g.rotate(a);
+      g.beginPath();
+      g.moveTo(0, -rInner);
+      g.bezierCurveTo(halfW * 1.25, -(rInner + (rOuter - rInner) * 0.3), halfW, -(rOuter - (rOuter - rInner) * 0.18), 0, -rOuter);
+      g.bezierCurveTo(-halfW, -(rOuter - (rOuter - rInner) * 0.18), -halfW * 1.25, -(rInner + (rOuter - rInner) * 0.3), 0, -rInner);
+      g.closePath();
+      if (fill) g.fill();
+      g.stroke();
+      g.restore();
+    }
+  }
+
+  // Slender, slightly curling petal — for mum/dahlia-style ruffled blooms.
+  // `curl` shifts the tip sideways so successive rings can alternate twist.
+  function curledPetalRing(g, cx, cy, rInner, rOuter, count, widthFrac, curl, color, alpha, lw, fill, offsetAngle) {
+    g.strokeStyle = hexToRgba(color, alpha);
+    g.fillStyle = hexToRgba(color, fill ? alpha * 0.2 : 0);
+    g.lineWidth = lw;
+    const halfW = (rOuter - rInner) * widthFrac;
+    const tipShift = curl * halfW;
+    for (let i = 0; i < count; i++) {
+      const a = (i / count) * Math.PI * 2 + (offsetAngle || 0);
+      g.save();
+      g.translate(cx, cy);
+      g.rotate(a);
+      g.beginPath();
+      g.moveTo(0, -rInner);
+      g.bezierCurveTo(halfW, -(rInner + (rOuter - rInner) * 0.42), halfW * 0.55 + tipShift, -(rOuter - (rOuter - rInner) * 0.08), tipShift, -rOuter);
+      g.bezierCurveTo(-halfW * 0.3 + tipShift, -(rOuter - (rOuter - rInner) * 0.04), -halfW * 0.75, -(rInner + (rOuter - rInner) * 0.42), 0, -rInner);
+      g.closePath();
+      if (fill) g.fill();
+      g.stroke();
+      g.restore();
+    }
+  }
+
+  function trianglePickets(g, cx, cy, r, count, h, w, color, alpha, lw, fill) {
+    g.strokeStyle = hexToRgba(color, alpha);
+    g.fillStyle = hexToRgba(color, fill ? alpha * 0.5 : 0);
+    g.lineWidth = lw;
+    for (let i = 0; i < count; i++) {
+      const a = (i / count) * Math.PI * 2;
+      g.save();
+      g.translate(cx, cy);
+      g.rotate(a);
+      g.beginPath();
+      g.moveTo(-w / 2, -r);
+      g.lineTo(w / 2, -r);
+      g.lineTo(0, -(r + h));
+      g.closePath();
+      if (fill) g.fill();
+      g.stroke();
+      g.restore();
+    }
+  }
+
+  // =========================================================
+  // Five distinct compositions — each arranges the same primitive
+  // vocabulary (petals, filigree, paisley, sacred geometry, garlands)
+  // into a genuinely different structure, not just a recolor.
+  // =========================================================
+
+  // Peony Bloom — many densely overlapping ruffled petal layers, fuller
+  // and blousier than a rose, almost no visible center by the outer rings.
+  function composePeonyBloom(g, cx, cy, maxR, N, theme, s, fillScale, lowSym) {
+    circleOutline(g, cx, cy, maxR * 0.015, theme.gold, 0.6, 1 * s);
+    dotRing(g, cx, cy, maxR * 0.03, N, maxR * 0.005, theme.gold, 0.7);
+    // tight ruffled inner bud
+    curledPetalRing(g, cx, cy, maxR * 0.025, maxR * 0.09, N / 2, 0.55, 0.4, theme.gold, 0.85, 1.1 * s, true);
+    curledPetalRing(g, cx, cy, maxR * 0.04, maxR * 0.11, N / 2, 0.5, -0.4, theme.ink, 0.75, 1.1 * s, true, Math.PI / (N / 2));
+    // many wide, ruffled overlapping layers, growing outward, alternating curl
+    const layers = 9;
+    for (let L = 0; L < layers; L++) {
+      const t = L / (layers - 1);
+      const rIn = maxR * (0.09 + t * 0.75);
+      const rOut = maxR * (0.17 + t * 0.75);
+      const off = (L % 2 === 0) ? 0 : Math.PI / N;
+      const widthFrac = Math.min(0.66, 0.5 * fillScale);
+      const curl = (L % 2 === 0) ? 0.28 : -0.28;
+      const color = L % 3 === 0 ? theme.gold : theme.ink;
+      const alpha = 0.7 + t * 0.2;
+      curledPetalRing(g, cx, cy, rIn, rOut, N, widthFrac, curl, color, alpha, (1 + t * 0.5) * s, true, off);
+      if (lowSym) {
+        ovalPetalRing(g, cx, cy, rIn * 1.03, rOut * 0.95, N, widthFrac * 0.6, theme.gold, alpha * 0.5, 0.8 * s, false, off + Math.PI / N * 0.5);
+      }
+    }
+    scallopBorder(g, cx, cy, maxR * 0.93, N * (lowSym ? 3 : 2), maxR * 0.02, theme.ink, 0.5, 0.8 * s);
+    circleOutline(g, cx, cy, maxR * 0.955, theme.gold, 0.55, 1.3 * s);
+    circleOutline(g, cx, cy, maxR * 0.975, theme.ink, 0.4, 0.8 * s);
+    dotRing(g, cx, cy, maxR * 0.965, N * 3, maxR * 0.0035, theme.ink, 0.5);
+  }
+
+  // Hibiscus Bloom — a handful of broad, overlapping trumpet-shaped petals
+  // with a long prominent stamen column rising from the center.
+  function composeHibiscusBloom(g, cx, cy, maxR, N, theme, s, fillScale, lowSym) {
+    const petals = Math.max(5, Math.round(N / 2));
+    circleOutline(g, cx, cy, maxR * 0.015, theme.ink, 0.6, 1 * s);
+
+    // two broad overlapping petal layers forming the wide open bloom
+    ovalPetalRing(g, cx, cy, maxR * 0.10, maxR * 0.88, petals, Math.min(0.95, 0.8 * fillScale), theme.ink, 0.88, 1.4 * s, true);
+    ovalPetalRing(g, cx, cy, maxR * 0.10, maxR * 0.80, petals, Math.min(0.62, 0.5 * fillScale), theme.gold, 0.55, 1 * s, false, Math.PI / petals);
+    if (lowSym) {
+      ovalPetalRing(g, cx, cy, maxR * 0.11, maxR * 0.72, petals, 0.45, theme.gold, 0.4, 0.9 * s, false, Math.PI / petals * 0.5);
+      ovalPetalRing(g, cx, cy, maxR * 0.11, maxR * 0.72, petals, 0.45, theme.gold, 0.4, 0.9 * s, false, -Math.PI / petals * 0.5);
+    }
+    // thin radial vein lines on each petal for texture
+    rayTicks(g, cx, cy, maxR * 0.12, maxR * 0.78, petals, theme.gold, 0.3, 0.6 * s);
+
+    // prominent central stamen column with anther cluster at the tip
+    circleOutline(g, cx, cy, maxR * 0.09, theme.gold, 0.5, 1 * s);
+    dotRing(g, cx, cy, maxR * 0.055, N, maxR * 0.005, theme.ink, 0.6);
+    for (let k = 0; k < 4; k++) circleOutline(g, cx, cy, maxR * (0.01 + k * 0.008), theme.ink, 0.55, 0.9 * s);
+    dotRing(g, cx, cy, maxR * 0.10, N * 2, maxR * 0.006, theme.gold, 0.7);
+    dotRing(g, cx, cy, maxR * 0.115, N * 2, maxR * 0.004, theme.ink, 0.5);
+
+    scallopBorder(g, cx, cy, maxR * 0.93, N * (lowSym ? 3 : 2), maxR * 0.02, theme.gold, 0.45, 0.8 * s);
+    circleOutline(g, cx, cy, maxR * 0.955, theme.gold, 0.55, 1.3 * s);
+    circleOutline(g, cx, cy, maxR * 0.975, theme.ink, 0.4, 0.8 * s);
+  }
+
+  // Sunflower Bloom — a dense spiralling seed-disc center surrounded by
+  // long slender pointed petals, single bold ray of florets.
+  function composeSunflowerBloom(g, cx, cy, maxR, N, theme, s, fillScale, lowSym) {
+    // seed-disc center: concentric dot spirals mimicking a sunflower head
+    circleOutline(g, cx, cy, maxR * 0.20, theme.gold, 0.4, 1 * s);
+    for (let ring = 1; ring <= 7; ring++) {
+      const rr = maxR * 0.20 * (ring / 7);
+      dotRing(g, cx, cy, rr, Math.round(N * 0.6 * (ring / 7) * fillScale) + 6, maxR * 0.006, ring % 2 === 0 ? theme.ink : theme.gold, 0.6);
+    }
+    circleOutline(g, cx, cy, maxR * 0.205, theme.ink, 0.45, 1 * s);
+    dotRing(g, cx, cy, maxR * 0.215, N * 2, maxR * 0.004, theme.gold, 0.55);
+
+    // inner short ray florets
+    petalRing(g, cx, cy, maxR * 0.22, maxR * 0.34, N, Math.min(0.30, 0.24 * fillScale), theme.gold, 0.7, 1 * s, false);
+
+    // long primary petals — narrow, pointed, sun-ray like
+    petalRing(g, cx, cy, maxR * 0.24, maxR * 0.86, N, Math.min(0.20, 0.15 * fillScale), theme.ink, 0.9, 1.4 * s, true);
+    petalRing(g, cx, cy, maxR * 0.26, maxR * 0.80, N, Math.min(0.13, 0.10 * fillScale), theme.gold, 0.7, 1 * s, false, Math.PI / N);
+    if (lowSym) {
+      petalRing(g, cx, cy, maxR * 0.27, maxR * 0.72, N, 0.14, theme.gold, 0.5, 0.9 * s, false, Math.PI / N * 0.5);
+      petalRing(g, cx, cy, maxR * 0.27, maxR * 0.72, N, 0.14, theme.gold, 0.5, 0.9 * s, false, -Math.PI / N * 0.5);
+      garlandRing(g, cx, cy, maxR * 0.42, N * 2, maxR * 0.02, theme.gold, 0.3, 0.8 * s);
+    }
+    rayTicks(g, cx, cy, maxR * 0.865, maxR * 0.90, N * 2, theme.ink, 0.4, 0.75 * s);
+    dotRing(g, cx, cy, maxR * 0.92, N * (lowSym ? 3 : 2), maxR * 0.0045, theme.gold, 0.55);
+    circleOutline(g, cx, cy, maxR * 0.955, theme.gold, 0.55, 1.3 * s);
+    circleOutline(g, cx, cy, maxR * 0.975, theme.ink, 0.4, 0.8 * s);
+  }
+
+  // Daisy Bloom — clean, simple, two even layers of long thin rounded
+  // petals around a plain textured disc. Minimal and fresh.
+  function composeDaisyBloom(g, cx, cy, maxR, N, theme, s, fillScale, lowSym) {
+    dotRing(g, cx, cy, maxR * 0.06, N * 2, maxR * 0.005, theme.gold, 0.7);
+    dotRing(g, cx, cy, maxR * 0.10, N * 3, maxR * 0.005, theme.ink, 0.5);
+    dotRing(g, cx, cy, maxR * 0.14, N * 3, maxR * 0.0045, theme.gold, 0.45);
+    circleOutline(g, cx, cy, maxR * 0.165, theme.ink, 0.4, 1 * s);
+
+    // main long thin petals
+    ovalPetalRing(g, cx, cy, maxR * 0.18, maxR * 0.80, N, Math.min(0.16, 0.13 * fillScale), theme.ink, 0.9, 1.3 * s, true);
+    // secondary shorter interleaved petals
+    ovalPetalRing(g, cx, cy, maxR * 0.19, maxR * 0.60, N, Math.min(0.14, 0.11 * fillScale), theme.gold, 0.6, 1 * s, false, Math.PI / N);
+    if (lowSym) {
+      ovalPetalRing(g, cx, cy, maxR * 0.19, maxR * 0.55, N, 0.12, theme.gold, 0.45, 0.9 * s, false, Math.PI / N * 0.5);
+      ovalPetalRing(g, cx, cy, maxR * 0.19, maxR * 0.55, N, 0.12, theme.gold, 0.45, 0.9 * s, false, -Math.PI / N * 0.5);
+    }
+    circleOutline(g, cx, cy, maxR * 0.82, theme.gold, 0.35, 0.9 * s);
+    dotRing(g, cx, cy, maxR * 0.88, N * (lowSym ? 3 : 2), maxR * 0.004, theme.ink, 0.4);
+    scallopBorder(g, cx, cy, maxR * 0.93, N * (lowSym ? 3 : 2), maxR * 0.018, theme.gold, 0.4, 0.75 * s);
+    circleOutline(g, cx, cy, maxR * 0.955, theme.gold, 0.5, 1.1 * s);
+    circleOutline(g, cx, cy, maxR * 0.975, theme.ink, 0.35, 0.7 * s);
+  }
+
+  // Chrysanthemum Bloom — dense, ruffled, many-layered thin curling
+  // petals in alternating twist directions, richly full mum silhouette.
+  function composeChrysanthemumBloom(g, cx, cy, maxR, N, theme, s, fillScale, lowSym) {
+    circleOutline(g, cx, cy, maxR * 0.02, theme.gold, 0.6, 1 * s);
+    dotRing(g, cx, cy, maxR * 0.04, N, maxR * 0.005, theme.ink, 0.6);
+
+    const layers = 7;
+    for (let L = 0; L < layers; L++) {
+      const t = L / (layers - 1);
+      const rIn = maxR * (0.05 + t * 0.10);
+      const rOut = maxR * (0.14 + t * 0.80);
+      const count = Math.round(N * (1 + (lowSym ? 0.5 : 0)));
+      const curl = (L % 2 === 0) ? 0.5 : -0.5;
+      const off = (L % 2 === 0) ? 0 : Math.PI / count;
+      const color = L % 3 === 0 ? theme.gold : theme.ink;
+      const widthFrac = Math.min(0.30, (0.16 + t * 0.05) * fillScale);
+      curledPetalRing(g, cx, cy, rIn, rOut, count, widthFrac, curl, color, 0.6 + t * 0.25, (0.8 + t * 0.5) * s, true, off);
+    }
+    scallopBorder(g, cx, cy, maxR * 0.93, N * (lowSym ? 3 : 2), maxR * 0.02, theme.gold, 0.45, 0.8 * s);
+    circleOutline(g, cx, cy, maxR * 0.955, theme.gold, 0.55, 1.3 * s);
+    circleOutline(g, cx, cy, maxR * 0.975, theme.ink, 0.4, 0.8 * s);
+    dotRing(g, cx, cy, maxR * 0.965, N * 3, maxR * 0.0035, theme.ink, 0.5);
+  }
+
+  const DESIGNS = {
+    peonyBloom: { name: 'Peony Bloom', compose: composePeonyBloom },
+    hibiscusBloom: { name: 'Hibiscus Bloom', compose: composeHibiscusBloom },
+    sunflowerBloom: { name: 'Sunflower Bloom', compose: composeSunflowerBloom },
+    daisyBloom: { name: 'Daisy Bloom', compose: composeDaisyBloom },
+    chrysanthemumBloom: { name: 'Chrysanthemum Bloom', compose: composeChrysanthemumBloom },
+  };
+
+  // =========================================================
+  // Dispatcher: background + chosen design composition + watermark
+  // =========================================================
+  function renderMandala(g, size, symmetry, theme, seedStr, designKey, opts) {
+    opts = opts || {};
+    const cx = size / 2, cy = size / 2;
+    const maxR = size * 0.47;
+    const s = size / 1400; // stroke-width scale factor relative to base 1400px canvas
+    const N = symmetry;
+    // At low symmetry counts, the angular gap between motifs grows — scale
+    // motif width/size up so each composition stays dense and balanced.
+    const fillScale = Math.max(1, Math.min(2.4, 20 / N));
+    const lowSym = N <= 16;
+
+    g.clearRect(0, 0, size, size);
+    const bgGrad = g.createRadialGradient(cx, cy, 0, cx, cy, size * 0.75);
+    bgGrad.addColorStop(0, theme.bg2);
+    bgGrad.addColorStop(1, theme.bg);
+    g.fillStyle = bgGrad;
+    g.fillRect(0, 0, size, size);
+
+    const design = DESIGNS[designKey] || DESIGNS.lotusBloom;
+    design.compose(g, cx, cy, maxR, N, theme, s, fillScale, lowSym);
+
+    if (!opts.noWatermark) {
+      g.font = `${Math.round(15 * s)}px monospace`;
+      g.fillStyle = hexToRgba(theme.ink, 0.4);
+      g.textAlign = 'center';
+      g.fillText(`transient mandala · ${opts.id}`, cx, size - 18 * s);
+    }
+  }
+
+  let last = null;
+
+  function draw() {
+    const symmetry = parseInt(symRange.value, 10);
+    const themeKey = themeSelect.value;
+    const theme = THEMES[themeKey];
+    const designKey = designSelect.value;
+    const id = uniqueId();
+    const seedStr = `${symmetry}|${themeKey}|${designKey}|${id}`;
+
+    renderMandala(ctx, SIZE, symmetry, theme, seedStr, designKey, { id });
+
+    metaDesign.textContent = DESIGNS[designKey].name;
+    metaSym.textContent = symmetry;
+    metaId.textContent = id;
+    canvas.dataset.filename = `transient_mandala_${designKey}_${symmetry}fold_${id}.png`;
+
+    last = { symmetry, theme, themeKey, designKey, seedStr, id };
+  }
+
+  function downloadImage() {
+    const link = document.createElement('a');
+    link.download = canvas.dataset.filename || `transient_mandala_${uniqueId()}.png`;
+    link.href = canvas.toDataURL('image/png');
+    link.click();
+  }
+
+  function renderA4(callback) {
+    if (!last) draw();
+    const W = 2480, H = 3508;
+    const off = document.createElement('canvas');
+    off.width = W; off.height = H;
+    const g = off.getContext('2d');
+    g.fillStyle = last.theme.bg;
+    g.fillRect(0, 0, W, H);
+
+    const artSize = W - 280;
+    const offX = (W - artSize) / 2;
+    const offY = 200;
+
+    g.save();
+    g.translate(offX, offY);
+    renderMandala(g, artSize, last.symmetry, last.theme, last.seedStr, last.designKey, { id: last.id, noWatermark: true });
+    g.restore();
+
+    g.fillStyle = hexToRgba(last.theme.ink, 0.8);
+    g.textAlign = 'center';
+    g.font = '600 42px Georgia, serif';
+    g.fillText(`Transient Mandala — ${DESIGNS[last.designKey].name}`, W / 2, 120);
+    g.font = '24px monospace';
+    g.fillStyle = hexToRgba(last.theme.ink, 0.55);
+    g.fillText(`${last.symmetry}-fold symmetry · ID: ${last.id}`, W / 2, H - 80);
+    g.font = '18px monospace';
+    g.fillStyle = hexToRgba(last.theme.ink, 0.4);
+    g.fillText(`© ${new Date().getFullYear()} Transient. All rights reserved.`, W / 2, H - 45);
+
+    callback(off);
+  }
+
+  function downloadA4() {
+    renderA4((off) => {
+      const link = document.createElement('a');
+      link.download = `transient_mandala_A4_${last.designKey}_${last.id}.png`;
+      link.href = off.toDataURL('image/png');
+      link.click();
+    });
+  }
+
+  const yearEl = document.getElementById('year');
+  if (yearEl) yearEl.textContent = new Date().getFullYear();
+
+  symRange.addEventListener('input', () => { symVal.textContent = symRange.value; });
+  generateBtn.addEventListener('click', draw);
+  downloadBtn.addEventListener('click', downloadImage);
+  downloadA4Btn.addEventListener('click', downloadA4);
+
+  draw();
+})();
+</script>
+</body>
+</html>
